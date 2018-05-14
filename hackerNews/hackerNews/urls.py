@@ -1,9 +1,13 @@
 from django.contrib import admin
 from django.urls import path
 from blog import views
+from django.conf.urls import include
 
 urlpatterns = [
-    path(r'', views.index, name='index'),
-	path(r'blog/view/', views.view_post, name='view_blog_post'),
-	path(r'blog/category/', views.view_category, name='view_blog_category'),
+	path('admin/', admin.site.urls),
+	path('accounts/', include('django.contrib.auth.urls')),
+    path(r'', views.index, name='home'),
+    path(r'register/', views.register_user, name='register_user'),
+	path(r'new_article/', views.new_article, name='new_article'),	
+	path(r'<int:pk>/comments', views.comments, name='comments'),
 ]

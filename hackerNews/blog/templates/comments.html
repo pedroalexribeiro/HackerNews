@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+	<p>The article has the following comments:</p>
+	<ol>
+	{% for comment in comments %}
+	    <li>
+	    	<a href="{{ User.link }}"><b>{{ comment.text }}</b></a> by <i>{{ comment.person.username }}</i>
+	    </li>
+	{% endfor %}
+</ol>
+
+{% endblock %}

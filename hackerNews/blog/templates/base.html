@@ -1,11 +1,23 @@
-<html>
-    <head>
-        <title>{% block head_title %}Welcome to my blog{% endblock %}</title>
-    </head>
-    <body>
-        <h1>{% block title %}Welcome to my block{% endblock %}</h1>
-        {% block content %}
-
-        {% endblock %}
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Hacker News Clone{% endblock %}</title>
+  </head>
+  <body>
+    <header>
+      <h1>Hacker News Clone</h1>
+      {% if user.is_authenticated %}
+        <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+      {% else %}
+        <a href="{% url 'login'%}?next={{request.path}}">Login</a> / <a href="{% url 'register_user' %}">Register</a> / <a href="{% url 'new_article' %}"> New Article </a>
+      {% endif %}
+      <hr>
+    </header>
+    <main>
+      {% block content %}
+      {% endblock %}
+    </main>
+  </body>
 </html>

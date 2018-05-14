@@ -1,28 +1,36 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.conf import settings
+
 
 # Create your models here.
-class Blog(models.Model):
-    title = models.CharField(max_length=100, unique=True)
-    slug = models.SlugField(max_length=100, unique=True)
-    body = models.TextField()
-    posted = models.DateField(db_index=True, auto_now_add=True)
-    category = models.ForeignKey('blog.Category', on_delete=models.CASCADE)
 
-    def __unicode__(self):
-        return '%s' % self.title
+class Article(models.Model):
+    title = models.CharField(max_length=100, default="New Tittle")
+    body = models.TextField(default="No text")
+    upvotes = models.IntegerField(default=0)
+    downvotes = models.IntegerField(default=0)
+    pubdate = models.DateField(auto_now_add=True)
+    person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
-    #@permalink
+    # Metadata
+    class Meta: 
+        ordering = ["-pubdate"]
+
+    def __str__(self):
+        return self.title
+
     def get_absolute_url(self):
-        return ('view_blog_post', None, { 'slug': self.slug })
+        return reverse('home', args=[str(self.id)])
 
 
-class Category(models.Model):
-    title = models.CharField(max_length=100, db_index=True)
-    slug = models.SlugField(max_length=100, db_index=True)
+class Comment(models.Model):
+    text = models.TextField()
+    article = models.ForeignKey(Article, null=True, on_delete=models.SET_NULL)
+    person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
-    def __unicode__(self):
-        return '%s' % self.title
+    def __str__(self):
+        return self.text
 
-    #@permalink
     def get_absolute_url(self):
-        return ('view_blog_category', None, { 'slug': self.slug })
+        return reverse('home', args=[str(self.id)])

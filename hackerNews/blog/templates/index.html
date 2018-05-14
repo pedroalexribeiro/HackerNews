@@ -1,27 +1,19 @@
-{% extends 'base.html' %}
-{% block title %}Welcome to my blog{% endblock %}
+{% extends "base.html" %}
 
 {% block content %}
-    <h2>Categories</h2>
-    {% if categories %}
-        <ul>
-        {% for category in categories %}
-            <li><a href="{{ category.get_absolute_url }}">{{ category.title }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>There are no posts.</p>
-    {% endif %}
+<h1>All articles</h1>
 
-    <h2>Posts</h2>
-    {% if posts %}
-        <ul>
-        {% for post in posts %}
-            <li><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></li>
-        {% endfor %}
-        </ul>
-    {% else %}
-        <p>There are no posts.</p>
-    {% endif %}
+  <p>Welcome to <em>Hacker News Clone</em>, a very basic Django website developed as a project for Faber Ventures.</p>
+
+<h2>Dynamic content</h2>
+  	<p>The blog has the following articles:</p>
+ 	<ol>
+		{% for article in articles %}
+		    <li>
+		    	<a href="{{ article.link }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
+		    	<a href="{% url 'comments' article.id %}">comments</a> <a href="">upvote</a>
+		    </li>
+		{% endfor %}
+	</ol>
 
 {% endblock %}

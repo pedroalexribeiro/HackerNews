@@ -1,23 +1,87 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.shortcuts import render_to_response, get_object_or_404
+from django.views import generic
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+import datetime
+from django.views.generic.edit import CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from django.contrib.auth import login, authenticate
+from django.contrib.auth.forms import UserCreationForm
+
+from .forms import RegisterUserForm, ArticleForm, CommentForm
+from .models import Article, Comment
 
 # Create your views here.
-from .models import Blog, Category
-from django.shortcuts import render_to_response, get_object_or_404
 
 def index(request):
-    return render_to_response('index.html', {
-        'categories': Category.objects.all(),
-        'posts': Blog.objects.all()[:5]
-    })
+    articles = Article.objects.all()
+    # Render the HTML template index.html with the data in the context variable
+    return render(request, 'index.html', context={'articles':articles})
 
-def view_post(request, slug):   
-    return render_to_response('view_post.html', {
-        'post': get_object_or_404(Blog, slug=slug)
-    })
+def comments(request, pk):
+	try:
+		comments = Comment.objects.filter(pk=pk)
+	except Comments.DoesNotExist:
+		raise Http404("Article does not exist")
+	return render(request, 'comments.html', context={'comments':comments})
+	
+"""class BookListView(generic.ListView):
+    model = Article
 
-def view_category(request, slug):
-    category = get_object_or_404(Category, slug=slug)
-    return render_to_response('view_category.html', {
-        'category': category,
-        'posts': Blog.objects.filter(category=category)[:5]
-    })
+class LoanedBooksByUserListView(LoginRequiredMixin,generic.ListView):
+
+    Generic class-based view listing books on loan to current user. 
+    model = Article
+    template_name ='catalog/bookinstance_list_borrowed_user.html'
+    paginate_by = 10
+    
+    def get_queryset(self):
+        return BookInstance.objects.filter(borrower=self.request.user).filter(status__exact='o').order_by('due_back')
+"""
+
+def register_user(request):
+    if request.method == 'POST':
+        form = RegisterUserForm(request.POST)
+        if form.is_valid():
+            form.save()
+            username = form.cleaned_data.get('username')
+            raw_password = form.cleaned_data.get('password1')
+            user = authenticate(username=username, password=raw_password)
+            login(request, user)
+            return redirect('home')
+    else:
+        form = RegisterUserForm()
+    return render(request, 'registration/register_new_user.html', {'form': form})
+
+@login_required
+def new_article(request):
+	if request.method == 'POST':
+		form = ArticleForm(request.POST)
+		if form.is_valid():
+			form.save()
+			return redirect('home')
+	else:
+		form = ArticleForm()
+	return render(request, 'new_article.html', {'form': form})
+
+@login_required
+def new_comment(request, id):
+	try:
+		artic = Article.objects.get(pk=id)
+	except Article.DoesNotExist:
+		raise Http404("Article does not exist")
+
+	if request.method == 'POST':
+		form = CommentForm(request.POST)
+		if form.is_valid():
+			aux = form.save(commit=False)
+			aux.article = artic
+			if request.user.is_authenticated():
+				aux.person = request.user
+			return redirect('home')
+	else:
+		form = CommentForm()
+	return render(request, 'new_comment.html', {'form': form})
