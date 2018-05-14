@@ -21,13 +21,26 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context={'articles':articles})
 
+@login_required
 def comments(request, pk):
 	try:
-		comments = Comment.objects.filter(pk=pk)
-	except Comments.DoesNotExist:
+		article = Article.objects.get(pk=pk)
+		comments = Comment.objects.filter(article = article)
+	except Article.DoesNotExist:
 		raise Http404("Article does not exist")
-	return render(request, 'comments.html', context={'comments':comments})
-	
+	if request.method == 'POST':
+		form = CommentForm(request.POST)
+		if form.is_valid():
+			aux = form.save(commit=False)
+			aux.article = Article.objects.get(pk=pk)
+			if request.user.is_authenticated:
+				aux.person = request.user
+			aux.save()
+			return redirect('home')
+	else:
+		form = CommentForm()
+	return render(request, 'comments.html', context={'form':CommentForm, 'comments':comments})
+
 """class BookListView(generic.ListView):
     model = Article
 
@@ -81,6 +94,7 @@ def new_comment(request, id):
 			aux.article = artic
 			if request.user.is_authenticated():
 				aux.person = request.user
+			aux.save()
 			return redirect('home')
 	else:
 		form = CommentForm()
