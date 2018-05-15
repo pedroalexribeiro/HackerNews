@@ -8,7 +8,7 @@ from django.urls import reverse
 
 class Article(models.Model):
     title = models.CharField(max_length=100, default="New Tittle")
-    body = models.TextField(default="No text")
+    link = models.URLField()
     pubdate = models.DateField(auto_now_add=True)
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -36,7 +36,7 @@ class Comment(models.Model):
 class Vote(models.Model):
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     article = models.ForeignKey(Article, null=True, on_delete=models.SET_NULL, related_name='votes')
-    number = models.IntegerField(null=True)
+    has_voted = models.BooleanField(default=False)
 
     def __str__(self):
         return self.person.username

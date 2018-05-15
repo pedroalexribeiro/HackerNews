@@ -11,6 +11,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from .forms import RegisterUserForm, ArticleForm, CommentForm
 from .models import Article, Comment, Vote
@@ -18,8 +19,16 @@ from .models import Article, Comment, Vote
 # Create your views here.
 
 def index(request):
-    articles = Article.objects.all()
-    # Render the HTML template index.html with the data in the context variable
+    article_list = Article.objects.all()
+    page = request.GET.get('page', 1)
+    paginator = Paginator(article_list, 30) # Show 25 contacts per page
+
+    try:
+        articles = paginator.page(page)
+    except PageNotAnInteger:
+        articles = paginator.page(page)
+    except EmptyPage:
+        articles = paginator.page(paginator.num_page)
     return render(request, 'index.html', context={'articles':articles})
 
 def article(request, pk):
@@ -55,7 +64,6 @@ def register_user(request):
 		form = RegisterUserForm()
 	return render(request, 'registration/register_new_user.html', {'form': form})
 
-@login_required
 def comments(request, pk):
 	try:
 		article = Article.objects.get(pk=pk)
@@ -87,23 +95,28 @@ def new_article(request):
 	return render(request, 'new_article.html', {'form': form})
 
 @login_required
-def upvote(request, pk):
+def vote(request, pk):
 	try:
 		article = Article.objects.get(pk=pk)
 	except Article.DoesNotExist:
 		raise Http404("Article does not exist")
-	vote = article.votes.filter(person__username = request.user.username, number = 1)
-	if not vote:
+	try:
+		vote = article.votes.get(person__username = request.user.username, article__id = article.id)
+	except Vote.DoesNotExist:
 		aux = Vote.objects.create()
 		if request.user.is_authenticated:
 			aux.person = request.user
-		aux.number = 1	
+		aux.has_voted  = True
 		aux.article = article
 		aux.save()
 		article.save()
 		return redirect('home')
+	if vote.has_voted:
+		vote.has_voted = False
 	else:
-		raise Http404("You already upvoted")
+		vote.has_voted = True
+	vote.save()
+	return redirect('home')
 
 
 @login_required

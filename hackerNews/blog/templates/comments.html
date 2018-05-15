@@ -5,9 +5,11 @@
 	<ol>
 	{% for comment in comments %}
 	    <li>
-	    	<a href="{{ User.link }}"><b>{{ comment.text }}</b></a> by <i>{{ comment.person.username }}</i>
+	    	<a><b>{{ comment.text }}</b></a> by <i>{{ comment.person.username }}</i>
 	    </li>
+      <p></p>
 	{% endfor %}
+  {% if request.user.is_authenticated %}
 	<form method="post">
     {% csrf_token %}
     {% for field in form %}
@@ -24,6 +26,7 @@
     {% endfor %}
     <button type="submit">Comment</button>
   </form>
+  {% endif %}
 </ol>
 
 {% endblock %}

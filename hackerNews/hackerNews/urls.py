@@ -11,6 +11,5 @@ urlpatterns = [
 	path(r'new_article/', views.new_article, name='new_article'),
 	path(r'<int:pk>', views.article, name='view_article'),	
 	path(r'<int:pk>/comments', views.comments, name='comments'),
-	path(r'<int:pk>/upvote', views.upvote, name='upvote'),
-	path(r'<int:pk>/downvote', views.downvote, name='downvote')
+	path(r'<int:pk>/vote', views.vote, name='vote'),
 ]

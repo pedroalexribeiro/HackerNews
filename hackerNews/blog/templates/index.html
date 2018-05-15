@@ -1,19 +1,58 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Hello!</h1>
-
-  <p>Welcome to <em>Hacker News Clone</em>, a very basic Django website developed as a project for Faber Ventures.</p>
-
-<h2>All articles</h2>
-  	<p>The blog has the following articles:</p>
  	<ol>
 		{% for article in articles %}
 		    <li>
-		    	<a href="{{ article.get_absolute_url }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
-		    	<a href="{% url 'comments' article.id %}">comments</a> <a href="{% url 'upvote' article.id %}">upvote</a> <a href="{% url 'downvote' article.id %}">downvote</a>
+		    	<a href="{{ article.link }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
+		    	<a href="{% url 'comments' article.id %}">comments</a>
+		    	{% for vote in article.votes.all %} 
+		    		{% if forloop.last %}
+		    			{% if vote.person.username == request.user.username %}
+		    				{% if vote.has_voted %}
+		    					<a href="{% url 'vote' article.id %}">downvote</a>
+	    					{% else %}
+	    						<a href="{% url 'vote' article.id %}">upvote</a>
+			    			{% endif %}
+		    			{% else %}
+		    				<a href="{% url 'vote' article.id %}">upvote</a>
+	    				{% endif %}
+		    		{% else %}
+			    		{% if vote.person.username == request.user.username %}
+		    				{% if vote.has_voted %}
+		    					<a href="{% url 'vote' article.id %}">downvote</a>
+	    					{% else %}
+	    						<a href="{% url 'vote' article.id %}">upvote</a>
+			    			{% endif %}
+		    			{% endif %}
+	    			{% endif %}
+		    	{% endfor %}
 		    </li>
+	    {% empty %}
+    		<li>There a currently no articles to display.</li>
 		{% endfor %}
 	</ol>
+
+	{% if articles.has_other_pages %}
+	  <ul class="pagination">
+	    {% if articles.has_previous %}
+	      <li><a href="?page={{ articles.previous_page_number }}">&laquo;</a></li>
+	    {% else %}
+	      <li class="disabled"><span>&laquo;</span></li>
+	    {% endif %}
+	    {% for i in articles.paginator.page_range %}
+	      {% if articles.number == i %}
+	        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+	      {% else %}
+	        <li><a href="?page={{ i }}">{{ i }}</a></li>
+	      {% endif %}
+	    {% endfor %}
+	    {% if articles.has_next %}
+	      <li><a href="?page={{ articles.next_page_number }}">&raquo;</a></li>
+	    {% else %}
+	      <li class="disabled"><span>&raquo;</span></li>
+	    {% endif %}
+	  </ul>
+	{% endif %}
 
 {% endblock %}
