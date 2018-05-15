@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>All articles</h1>
+<h1>Hello!</h1>
 
   <p>Welcome to <em>Hacker News Clone</em>, a very basic Django website developed as a project for Faber Ventures.</p>
 
-<h2>Dynamic content</h2>
+<h2>All articles</h2>
   	<p>The blog has the following articles:</p>
  	<ol>
 		{% for article in articles %}
 		    <li>
-		    	<a href="{{ article.link }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
+		    	<a href="{{ article.get_absolute_url }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
 		    	<a href="{% url 'comments' article.id %}">comments</a> <a href="">upvote</a>
 		    </li>
 		{% endfor %}

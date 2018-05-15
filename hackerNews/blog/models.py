@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from django.urls import reverse
 
 
 # Create your models here.
@@ -21,7 +22,7 @@ class Article(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('home', args=[str(self.id)])
+        return reverse('view_article', args=[str(self.id)])
 
 
 class Comment(models.Model):

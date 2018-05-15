@@ -21,6 +21,25 @@ def index(request):
     # Render the HTML template index.html with the data in the context variable
     return render(request, 'index.html', context={'articles':articles})
 
+def article(request, pk):
+	try:
+		article = Article.objects.get(pk=pk)
+		comments = Comment.objects.filter(article = article)
+	except Article.DoesNotExist:
+		raise Http404("Article does not exist")
+	if request.method == 'POST':
+		form = CommentForm(request.POST)
+		if form.is_valid():
+			aux = form.save(commit=False)
+			aux.article = article
+			if request.user.is_authenticated:
+				aux.person = request.user
+			aux.save()
+			return redirect('home')
+	else:
+		form = CommentForm()
+		return render(request, 'view_article.html', context={'article':article, 'form':CommentForm, 'comments':comments})
+
 @login_required
 def comments(request, pk):
 	try:
@@ -32,7 +51,7 @@ def comments(request, pk):
 		form = CommentForm(request.POST)
 		if form.is_valid():
 			aux = form.save(commit=False)
-			aux.article = Article.objects.get(pk=pk)
+			aux.article = article
 			if request.user.is_authenticated:
 				aux.person = request.user
 			aux.save()
@@ -79,23 +98,3 @@ def new_article(request):
 	else:
 		form = ArticleForm()
 	return render(request, 'new_article.html', {'form': form})
-
-@login_required
-def new_comment(request, id):
-	try:
-		artic = Article.objects.get(pk=id)
-	except Article.DoesNotExist:
-		raise Http404("Article does not exist")
-
-	if request.method == 'POST':
-		form = CommentForm(request.POST)
-		if form.is_valid():
-			aux = form.save(commit=False)
-			aux.article = artic
-			if request.user.is_authenticated():
-				aux.person = request.user
-			aux.save()
-			return redirect('home')
-	else:
-		form = CommentForm()
-	return render(request, 'new_comment.html', {'form': form})
