@@ -123,4 +123,9 @@ STATIC_URL = '/static/'
 # Redirect to home URL after login (Default redirects to /accounts/profile/)
 LOGIN_REDIRECT_URL = '/'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'django.faber@gmail.com'
+EMAIL_HOST_PASSWORD = 'faberisawesome'
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'HackerNewsClone <noreply@example.com>'

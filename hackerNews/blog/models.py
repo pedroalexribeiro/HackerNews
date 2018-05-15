@@ -9,8 +9,6 @@ from django.urls import reverse
 class Article(models.Model):
     title = models.CharField(max_length=100, default="New Tittle")
     body = models.TextField(default="No text")
-    upvotes = models.IntegerField(default=0)
-    downvotes = models.IntegerField(default=0)
     pubdate = models.DateField(auto_now_add=True)
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
@@ -24,7 +22,6 @@ class Article(models.Model):
     def get_absolute_url(self):
         return reverse('view_article', args=[str(self.id)])
 
-
 class Comment(models.Model):
     text = models.TextField()
     article = models.ForeignKey(Article, null=True, on_delete=models.SET_NULL)
@@ -35,3 +32,11 @@ class Comment(models.Model):
 
     def get_absolute_url(self):
         return reverse('home', args=[str(self.id)])
+
+class Vote(models.Model):
+    person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    article = models.ForeignKey(Article, null=True, on_delete=models.SET_NULL, related_name='votes')
+    number = models.IntegerField(null=True)
+
+    def __str__(self):
+        return self.person.username

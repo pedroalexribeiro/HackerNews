@@ -11,7 +11,7 @@
 		{% for article in articles %}
 		    <li>
 		    	<a href="{{ article.get_absolute_url }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
-		    	<a href="{% url 'comments' article.id %}">comments</a> <a href="">upvote</a>
+		    	<a href="{% url 'comments' article.id %}">comments</a> <a href="{% url 'upvote' article.id %}">upvote</a> <a href="{% url 'downvote' article.id %}">downvote</a>
 		    </li>
 		{% endfor %}
 	</ol>
