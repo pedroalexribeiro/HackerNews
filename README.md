@@ -34,7 +34,7 @@ python manage.py runserver
 After that, you can use any web browser and go to the link (http://127.0.0.1:8000/) and it will open my site.
 
 
-## Running the tests
+## Type of Accounts
 
 There are three types of accounts, the admin account, the staff account and the normal account, the admin can controll everything, the staff account is like a normal account but it can see the number of comments per article and can hide articles.
 
