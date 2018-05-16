@@ -43,13 +43,11 @@ There is one Admin Account and a Staff Account already created.
 The credentials for the Admin user are:
 
 Username: faberadmin
-
 Password: faberisawesome
 
 The credentials for the Staff user are:
 
 Username: faberstaff
-
 Password: faberisawesome
 
 To create a normal user you can just register and it will create a new account.
