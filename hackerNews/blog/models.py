@@ -7,9 +7,9 @@ from django.urls import reverse
 # Create your models here.
 
 class Article(models.Model):
-    title = models.CharField(max_length=100, default="New Tittle")
+    title = models.CharField(max_length=100, default="New Title")
     link = models.URLField()
-    pubdate = models.DateField(auto_now_add=True)
+    pubdate = models.DateTimeField(auto_now_add=True)
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
     visible = models.BooleanField(default=True)
     upvote = models.BooleanField(default=False)

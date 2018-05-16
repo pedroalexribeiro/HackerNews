@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <style>
+        div#header {
+          background-color: orange;
+          vertical-align: middle;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        a#link {
+          color:white;
+        }
+    </style>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Hacker News Clone{% endblock %}</title>
   </head>
   <body>
     <header>
-      <h1>Hacker News Clone</h1>
-      <a href="{% url 'home'%}">Home</a> /
-      <a href="{% url 'new_article' %}">New Article</a> /
-      {% if user.is_authenticated %}
-        <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
-      {% else %}
-        <a href="{% url 'login'%}?next={{request.path}}">Login</a> / <a href="{% url 'register_user' %}">Register</a>
-      {% endif %}
-      <hr>
+        <div id="header">
+        &nbsp;&nbsp;&nbsp;&nbsp;<b>Hacker News Clone</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a id="link" href="{% url 'home'%}">Home</a> /
+        <a id="link" href="{% url 'new_article' %}">New Article</a> /
+        {% if user.is_authenticated %}
+          <a id="link" href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+        {% else %}
+          <a id="link" href="{% url 'login'%}?next={{request.path}}">Login</a> / <a id="link" href="{% url 'register_user' %}">Register</a>
+        {% endif %}
+        <hr>
+      </div>
     </header>
     <main>
       {% block content %}

@@ -8,6 +8,8 @@
 	    	<a><b>{{ comment.text }}</b></a> by <i>{{ comment.person.username }}</i>
 	    </li>
       <p></p>
+  {% empty %}
+        <li>There a currently no articles to display.</li>
 	{% endfor %}
   {% if request.user.is_authenticated %}
 	<form method="post">

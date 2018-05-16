@@ -25,13 +25,13 @@ def index(request):
         if request.user.is_authenticated:
             try:
                 vote = article.votes.get(person__username = request.user.username, article__id = article.id)
+                if vote.has_voted == True:
+                    article.upvote = True
+                else:
+                    article.upvote = False
             except Vote.DoesNotExist:
                 article.upvote = False
                 article.save()
-            if vote.has_voted == True:
-                article.upvote = True
-            else:
-                article.upvote = False
         else:
             article.upvote = False
     page = request.GET.get('page', 1)
@@ -101,7 +101,10 @@ def new_article(request):
     if request.method == 'POST':
         form = ArticleForm(request.POST)
         if form.is_valid():
-            form.save()
+            aux = form.save(commit=False)
+            if request.user.is_authenticated:
+                aux.person = request.user
+            aux.save()
             return redirect('home')
     else:
         form = ArticleForm()
