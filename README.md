@@ -36,15 +36,20 @@ After that, you can use any web browser and go to the link (http://127.0.0.1:800
 
 ## Running the tests
 
-There are three types of users, the admin user, the staff user and the normal user, the admin can controll everything, the staff user is like a normal user but a staff user can see the number of comments per article and can hide articles.
+There are three types of accounts, the admin account, the staff account and the normal account, the admin can controll everything, the staff account is like a normal account but it can see the number of comments per article and can hide articles.
 
-There is one Admim User and a Staff User already created.
+There is one Admin Account and a Staff Account already created.
+
 The credentials for the Admin user are:
+
 Username: faberadmin
+
 Password: faberisawesome
 
 The credentials for the Staff user are:
+
 Username: faberstaff
+
 Password: faberisawesome
 
 To create a normal user you can just register and it will create a new account.
