@@ -12,6 +12,7 @@ from django.contrib.auth import login, authenticate
 from django.contrib.auth.forms import UserCreationForm
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.contrib.auth.decorators import permission_required
 
 from .forms import RegisterUserForm, ArticleForm, CommentForm
 from .models import Article, Comment, Vote
@@ -20,9 +21,18 @@ from .models import Article, Comment, Vote
 
 def index(request):
     article_list = Article.objects.all()
+    for article in article_list:
+    	try:
+    		vote = article.votes.get(person__username = request.user.username, article__id = article.id)
+    	except Vote.DoesNotExist:
+    		article.upvote = False
+    		article.save()
+    		if vote.has_voted == True:
+    			article.upvote = True
+    		else:
+    			article.upvote = False
     page = request.GET.get('page', 1)
     paginator = Paginator(article_list, 30) # Show 25 contacts per page
-
     try:
         articles = paginator.page(page)
     except PageNotAnInteger:
@@ -113,27 +123,21 @@ def vote(request, pk):
 		return redirect('home')
 	if vote.has_voted:
 		vote.has_voted = False
+		article.upvote = False
 	else:
 		vote.has_voted = True
+		article.upvote = True
+	article.save()
 	vote.save()
 	return redirect('home')
 
-
 @login_required
-def downvote(request, pk):
+@permission_required('catalog.can_change_status')
+def hide(request, pk):
 	try:
 		article = Article.objects.get(pk=pk)
-	except Article.DoesNotExist:
-		raise Http404("Article does not exist")
-	vote = article.votes.filter(person__username = request.user.username, number = -1)
-	if not vote:
-		aux = Vote.objects.create()
-		if request.user.is_authenticated:
-			aux.person = request.user
-		aux.number = -1	
-		aux.article = article
-		aux.save()
+		article.visible = False
 		article.save()
 		return redirect('home')
-	else:
-		raise Http404("You already downvoted")
+	except Article.DoesNotExist:
+		raise Http404("Article does not exist")

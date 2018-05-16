@@ -3,31 +3,21 @@
 {% block content %}
  	<ol>
 		{% for article in articles %}
-		    <li>
-		    	<a href="{{ article.link }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
-		    	<a href="{% url 'comments' article.id %}">comments</a>
-		    	{% for vote in article.votes.all %} 
-		    		{% if forloop.last %}
-		    			{% if vote.person.username == request.user.username %}
-		    				{% if vote.has_voted %}
-		    					<a href="{% url 'vote' article.id %}">downvote</a>
-	    					{% else %}
-	    						<a href="{% url 'vote' article.id %}">upvote</a>
-			    			{% endif %}
-		    			{% else %}
-		    				<a href="{% url 'vote' article.id %}">upvote</a>
-	    				{% endif %}
-		    		{% else %}
-			    		{% if vote.person.username == request.user.username %}
-		    				{% if vote.has_voted %}
-		    					<a href="{% url 'vote' article.id %}">downvote</a>
-	    					{% else %}
-	    						<a href="{% url 'vote' article.id %}">upvote</a>
-			    			{% endif %}
-		    			{% endif %}
+			{% if article.visible %}
+			    <li>
+			    	<a href="{{ article.link }}"><b>{{ article.title }}</b></a> by <i>{{ article.person.username }}</i>
+			    	<a href="{% url 'comments' article.id %}">comments</a>
+    				{% if article.upvote %}
+    					<a href="{% url 'vote' article.id %}">downvote</a>
+					{% else %}
+						<a href="{% url 'vote' article.id %}">upvote</a>
 	    			{% endif %}
-		    	{% endfor %}
-		    </li>
+			    	{% if perms.catalog.can_change_status %}
+	    				<a>{{article.comments.count}} comments</a>
+	    				<a href="{% url 'hide' article.id %}">Hide</a>
+					{% endif %}
+			    </li>
+		    {% endif %}
 	    {% empty %}
     		<li>There a currently no articles to display.</li>
 		{% endfor %}

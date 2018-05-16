@@ -12,4 +12,5 @@ urlpatterns = [
 	path(r'<int:pk>', views.article, name='view_article'),	
 	path(r'<int:pk>/comments', views.comments, name='comments'),
 	path(r'<int:pk>/vote', views.vote, name='vote'),
+	path(r'<int:pk>/hide', views.hide, name='hide'),
 ]

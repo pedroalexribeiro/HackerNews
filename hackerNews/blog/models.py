@@ -11,10 +11,13 @@ class Article(models.Model):
     link = models.URLField()
     pubdate = models.DateField(auto_now_add=True)
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
+    visible = models.BooleanField(default=True)
+    upvote = models.BooleanField(default=False)
 
     # Metadata
     class Meta: 
         ordering = ["-pubdate"]
+        permissions = (("can_change_status", "Can see and change articles"),)
 
     def __str__(self):
         return self.title
@@ -24,7 +27,7 @@ class Article(models.Model):
 
 class Comment(models.Model):
     text = models.TextField()
-    article = models.ForeignKey(Article, null=True, on_delete=models.SET_NULL)
+    article = models.ForeignKey(Article, null=True, on_delete=models.SET_NULL, related_name="comments")
     person = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
